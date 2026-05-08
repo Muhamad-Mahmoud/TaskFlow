@@ -7,4 +7,4 @@ public record UpdateTaskRequest(
     string? Priority,
     DateTime? DueDate,
     double? EstimatedHours,
-    Guid? AssigneeId);
+    string? AssigneeEmailOrPhone);

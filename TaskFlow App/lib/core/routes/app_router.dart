@@ -36,11 +36,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/create-task',
-      builder: (context, state) => const CreateTaskPage(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final projectId = extra?['projectId'] as String?;
+        return CreateTaskPage(preselectedProjectId: projectId);
+      },
     ),
     GoRoute(
       path: '/task-details',
-      builder: (context, state) => const TaskDetailsPage(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final taskId = extra?['taskId'] as String?;
+        return TaskDetailsPage(taskId: taskId);
+      },
     ),
     GoRoute(
       path: '/create-project',
@@ -48,11 +56,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/project-details',
-      builder: (context, state) => const ProjectDetailsPage(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final projectId = extra?['projectId'] as String? ?? '';
+        return ProjectDetailsPage(projectId: projectId);
+      },
     ),
     GoRoute(
       path: '/invite-member',
-      builder: (context, state) => const InviteMemberPage(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final projectId = extra?['projectId'] as String? ?? '';
+        return InviteMemberPage(projectId: projectId);
+      },
     ),
     GoRoute(
       path: '/admin',
@@ -60,4 +76,3 @@ final appRouter = GoRouter(
     ),
   ],
 );
-

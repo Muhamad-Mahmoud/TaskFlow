@@ -9,7 +9,8 @@ import '../bloc/tasks_bloc.dart';
 import '../../domain/models/task_models.dart';
 
 class CreateTaskPage extends StatefulWidget {
-  const CreateTaskPage({super.key});
+  final String? preselectedProjectId;
+  const CreateTaskPage({super.key, this.preselectedProjectId});
 
   @override
   State<CreateTaskPage> createState() => _CreateTaskPageState();
@@ -21,9 +22,15 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   int _selectedPriority = 1; // 0=Low, 1=Medium, 2=High
   String? _selectedProjectId;
   DateTime? _selectedDueDate;
+  final _assigneeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedProjectId = widget.preselectedProjectId;
+  }
 
   static const _bgColor = Color(0xFFF8FAFF);
-  static const _cardColor = Colors.white;
   static const _inputFill = Color(0xFFF1F5F9);
   static const _labelColor = Color(0xFF64748B);
   static const _textColor = Color(0xFF1E293B);
@@ -32,6 +39,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _assigneeController.dispose();
     super.dispose();
   }
 
@@ -225,6 +233,16 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
               const SizedBox(height: 24),
 
+              // Assignee Email or Phone
+              _buildLabel('ASSIGNEE EMAIL OR PHONE (Optional)'),
+              const SizedBox(height: 8),
+              _buildTextField(
+                controller: _assigneeController,
+                hint: 'e.g., teammate@example.com or 01xxxxxxxxx',
+              ),
+
+              const SizedBox(height: 24),
+
               // Description
               _buildLabel('DESCRIPTION'),
               const SizedBox(height: 8),
@@ -293,12 +311,14 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     }
 
     final priorities = ['Low', 'Medium', 'High'];
+    final assigneeIdStr = _assigneeController.text.trim();
     final request = CreateTaskRequest(
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       projectId: _selectedProjectId!,
       priority: priorities[_selectedPriority],
       dueDate: _selectedDueDate,
+      assigneeEmailOrPhone: assigneeIdStr.isNotEmpty ? assigneeIdStr : null,
     );
 
     getIt<TasksBloc>().add(CreateTaskRequested(request));

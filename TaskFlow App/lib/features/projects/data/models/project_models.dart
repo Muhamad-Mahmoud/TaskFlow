@@ -59,9 +59,9 @@ class ProjectStatsResponse {
 
 @JsonSerializable()
 class InviteMemberRequest {
-	final String userId;
+	final String emailOrPhone;
 	final String? role;
-	const InviteMemberRequest({required this.userId, this.role});
+	const InviteMemberRequest({required this.emailOrPhone, this.role});
 	Map<String, dynamic> toJson() => _$InviteMemberRequestToJson(this);
 }
 

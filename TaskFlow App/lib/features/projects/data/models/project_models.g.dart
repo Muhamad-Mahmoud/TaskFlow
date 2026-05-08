@@ -166,13 +166,16 @@ Map<String, dynamic> _$ProjectStatsResponseToJson(
 
 InviteMemberRequest _$InviteMemberRequestFromJson(Map<String, dynamic> json) =>
     InviteMemberRequest(
-      userId: json['userId'] as String,
+      emailOrPhone: json['emailOrPhone'] as String,
       role: json['role'] as String?,
     );
 
 Map<String, dynamic> _$InviteMemberRequestToJson(
   InviteMemberRequest instance,
-) => <String, dynamic>{'userId': instance.userId, 'role': instance.role};
+) => <String, dynamic>{
+  'emailOrPhone': instance.emailOrPhone,
+  'role': instance.role,
+};
 
 ChangeMemberRoleRequest _$ChangeMemberRoleRequestFromJson(
   Map<String, dynamic> json,

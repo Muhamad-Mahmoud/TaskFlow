@@ -114,16 +114,18 @@ public class ProjectService : IProjectService
 	{
 		var p = await _uow.Projects.GetByIdAsync(id, ct) ?? throw new NotFoundException(nameof(Project), id);
 		if (p.OwnerId != Me) throw new ForbiddenException();
-		if (await _uow.ProjectMembers.ExistsAsync(m => m.ProjectId == id && m.UserId == req.UserId, ct))
+
+		var user = await _uow.Users.GetByEmailOrPhoneAsync(req.EmailOrPhone, ct)
+			?? throw new NotFoundException($"User with email or phone {req.EmailOrPhone} was not found.");
+
+		if (await _uow.ProjectMembers.ExistsAsync(m => m.ProjectId == id && m.UserId == user.Id, ct))
 			throw new ConflictException("User is already a member.");
 
 		var member = new ProjectMember
-		{ ProjectId = id, UserId = req.UserId, Role = Enum.Parse<ProjectMemberRole>(req.Role, true) };
+		{ ProjectId = id, UserId = user.Id, Role = Enum.Parse<ProjectMemberRole>(req.Role, true) };
 		await _uow.ProjectMembers.AddAsync(member, ct);
 		await _uow.SaveChangesAsync(ct);
 
-		var user = await _uow.Users.GetByIdAsync(req.UserId, ct)
-			?? throw new NotFoundException(nameof(User), req.UserId);
 		return new ProjectMemberResponse(user.Id, user.FullName, user.AvatarUrl, member.Role.ToString());
 	}
 

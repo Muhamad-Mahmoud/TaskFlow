@@ -34,7 +34,7 @@ public class InviteMemberRequestValidator : AbstractValidator<InviteMemberReques
 {
 	public InviteMemberRequestValidator()
 	{
-		RuleFor(x => x.UserId).NotEmpty();
+		RuleFor(x => x.EmailOrPhone).NotEmpty();
 		RuleFor(x => x.Role).Must(r => Enum.TryParse<Domain.Enums.ProjectMemberRole>(r, true, out _));
 	}
 }

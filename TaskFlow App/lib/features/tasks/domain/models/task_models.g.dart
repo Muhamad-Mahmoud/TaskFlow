@@ -50,8 +50,8 @@ TaskResponse _$TaskResponseFromJson(Map<String, dynamic> json) => TaskResponse(
   tags: (json['tags'] as List<dynamic>)
       .map((e) => TagBrief.fromJson(e as Map<String, dynamic>))
       .toList(),
-  commentCount: (json['commentCount'] as num).toInt(),
-  attachmentCount: (json['attachmentCount'] as num).toInt(),
+  commentsCount: (json['commentsCount'] as num).toInt(),
+  attachmentsCount: (json['attachmentsCount'] as num).toInt(),
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
@@ -70,8 +70,8 @@ Map<String, dynamic> _$TaskResponseToJson(TaskResponse instance) =>
       'createdBy': instance.createdBy,
       'subtasks': instance.subtasks,
       'tags': instance.tags,
-      'commentCount': instance.commentCount,
-      'attachmentCount': instance.attachmentCount,
+      'commentsCount': instance.commentsCount,
+      'attachmentsCount': instance.attachmentsCount,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };
@@ -129,7 +129,7 @@ CreateTaskRequest _$CreateTaskRequestFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['dueDate'] as String),
       estimatedHours: (json['estimatedHours'] as num?)?.toDouble(),
-      assigneeId: json['assigneeId'] as String?,
+      assigneeEmailOrPhone: json['assigneeEmailOrPhone'] as String?,
     );
 
 Map<String, dynamic> _$CreateTaskRequestToJson(CreateTaskRequest instance) =>
@@ -141,7 +141,7 @@ Map<String, dynamic> _$CreateTaskRequestToJson(CreateTaskRequest instance) =>
       'priority': instance.priority,
       'dueDate': instance.dueDate?.toIso8601String(),
       'estimatedHours': instance.estimatedHours,
-      'assigneeId': instance.assigneeId,
+      'assigneeEmailOrPhone': instance.assigneeEmailOrPhone,
     };
 
 UpdateTaskRequest _$UpdateTaskRequestFromJson(Map<String, dynamic> json) =>
@@ -154,7 +154,7 @@ UpdateTaskRequest _$UpdateTaskRequestFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['dueDate'] as String),
       estimatedHours: (json['estimatedHours'] as num?)?.toDouble(),
-      assigneeId: json['assigneeId'] as String?,
+      assigneeEmailOrPhone: json['assigneeEmailOrPhone'] as String?,
     );
 
 Map<String, dynamic> _$UpdateTaskRequestToJson(UpdateTaskRequest instance) =>
@@ -165,5 +165,5 @@ Map<String, dynamic> _$UpdateTaskRequestToJson(UpdateTaskRequest instance) =>
       'priority': instance.priority,
       'dueDate': instance.dueDate?.toIso8601String(),
       'estimatedHours': instance.estimatedHours,
-      'assigneeId': instance.assigneeId,
+      'assigneeEmailOrPhone': instance.assigneeEmailOrPhone,
     };

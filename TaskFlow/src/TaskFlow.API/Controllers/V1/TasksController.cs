@@ -31,8 +31,8 @@ public class TasksController : ControllerBase
 		=> Ok(ApiResponse<TaskDetailResponse>.Ok(await _svc.GetAsync(id, ct)));
 
 	[HttpPut("tasks/{id:guid}")]
-	public async Task<ActionResult<ApiResponse<TaskResponse>>> Update(Guid id, [FromBody] UpdateTaskRequest req, CancellationToken ct)
-		=> Ok(ApiResponse<TaskResponse>.Ok(await _svc.UpdateAsync(id, req, ct)));
+	public async Task<ActionResult<ApiResponse<TaskDetailResponse>>> Update(Guid id, [FromBody] UpdateTaskRequest req, CancellationToken ct)
+		=> Ok(ApiResponse<TaskDetailResponse>.Ok(await _svc.UpdateAsync(id, req, ct)));
 
 	[HttpPatch("tasks/{id:guid}/status")]
 	public async Task<ActionResult<ApiResponse<object>>> Status(Guid id, [FromBody] UpdateStatusRequest req, CancellationToken ct)

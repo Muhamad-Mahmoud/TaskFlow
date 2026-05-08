@@ -11,6 +11,13 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 	public Task<User?> GetByEmailAsync(string email, CancellationToken ct = default)
 		=> Set.FirstOrDefaultAsync(u => u.NormalizedEmail == email.ToUpperInvariant(), ct);
 
+	public Task<User?> GetByEmailOrPhoneAsync(string emailOrPhone, CancellationToken ct = default)
+	{
+		var val = emailOrPhone.Trim();
+		var upperVal = val.ToUpperInvariant();
+		return Set.FirstOrDefaultAsync(u => u.NormalizedEmail == upperVal || u.PhoneNumber == val, ct);
+	}
+
 	public async Task<IReadOnlyList<User>> SearchAsync(string query, int take, CancellationToken ct = default)
 	{
 		var q = (query ?? "").Trim().ToLower();

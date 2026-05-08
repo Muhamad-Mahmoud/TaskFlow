@@ -1,192 +1,298 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskflow/core/constants/app_colors.dart';
+import 'package:taskflow/core/di/injection.dart';
+import '../bloc/projects_bloc.dart';
+import '../../data/models/project_models.dart';
 
-class InviteMemberPage extends StatelessWidget {
-  const InviteMemberPage({super.key});
+class InviteMemberPage extends StatefulWidget {
+  final String projectId;
+  const InviteMemberPage({super.key, required this.projectId});
+
+  @override
+  State<InviteMemberPage> createState() => _InviteMemberPageState();
+}
+
+class _InviteMemberPageState extends State<InviteMemberPage> {
+  final _emailController = TextEditingController();
+  String _selectedRole = 'Editor';
+
+  static const _roles = ['Viewer', 'Editor', 'Admin'];
+
+  static const _bgColor = Color(0xFFF8FAFF);
+  static const _inputFill = Color(0xFFF1F5F9);
+  static const _labelColor = Color(0xFF64748B);
+  static const _textColor = Color(0xFF1E293B);
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAFBFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFAFBFC),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.primary),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text('Invite Member', style: TextStyle(color: AppColors.textPrimaryLight, fontSize: 16)),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_vert, color: AppColors.textSecondaryLight),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Search Input
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Search by email',
-                prefixIcon: Icon(Icons.alternate_email, color: AppColors.textSecondaryLight),
-                filled: true,
-                fillColor: const Color(0xFFEBEFF5).withValues(alpha: 0.5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 20),
+    return BlocProvider(
+      create: (_) => getIt<ProjectsBloc>(),
+      child: BlocListener<ProjectsBloc, ProjectsState>(
+        listener: (context, state) {
+          if (state is InviteMemberSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${state.member.fullName} invited successfully!'),
+                backgroundColor: AppColors.success,
               ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Send Invite Button
-            SizedBox(
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: const Icon(Icons.send, size: 18),
-                label: const Text('Send Invite', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
+            );
+            context.pop();
+          } else if (state is InviteMemberFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
               ),
-            ),
-            
-            const SizedBox(height: 40),
-            
-            // Suggested Members Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Suggested Members',
-                  style: TextStyle(
+            );
+          }
+        },
+        child: Builder(builder: (context) {
+          return Scaffold(
+            backgroundColor: _bgColor,
+            appBar: AppBar(
+              backgroundColor: _bgColor,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                onPressed: () => context.pop(),
+              ),
+              title: const Text(
+                'Invite Member',
+                style: TextStyle(
+                    color: _textColor,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textSecondaryLight,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Text(
-                    'System Users',
+                    fontWeight: FontWeight.w600),
+              ),
+              centerTitle: true,
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Add a teammate',
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: _textColor,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Enter the email address or phone number of the person you want to invite.',
+                    style: TextStyle(fontSize: 14, color: _labelColor),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Email or Phone field
+                  _buildSectionLabel('EMAIL OR PHONE'),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: _textColor, fontSize: 15),
+                    cursorColor: AppColors.primary,
+                    decoration: InputDecoration(
+                      hintText: 'e.g. teammate@example.com or 01xxxxxxxxx',
+                      hintStyle:
+                          const TextStyle(color: _labelColor, fontSize: 13),
+                      prefixIcon: const Icon(Icons.person_search_outlined,
+                          color: AppColors.primary),
+                      filled: true,
+                      fillColor: _inputFill,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide:
+                            const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide:
+                            const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                            color: AppColors.primary, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Role selector
+                  _buildSectionLabel('ROLE'),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: _inputFill,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      children: _roles.map((role) {
+                        final isSelected = _selectedRole == role;
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () =>
+                                setState(() => _selectedRole = role),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black
+                                              .withValues(alpha: 0.06),
+                                          blurRadius: 8,
+                                        )
+                                      ]
+                                    : null,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  role,
+                                  style: TextStyle(
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : _labelColor,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // Role descriptions
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      _selectedRole == 'Viewer'
+                          ? '👁 Viewer: Can view tasks and project details, but cannot make changes.'
+                          : _selectedRole == 'Editor'
+                              ? '✏️ Editor: Can create and edit tasks, but cannot manage members.'
+                              : '⚙️ Admin: Full access to project — can manage tasks, members, and settings.',
+                      style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.primary,
+                          height: 1.4),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  BlocBuilder<ProjectsBloc, ProjectsState>(
+                    builder: (context, state) {
+                      final isLoading = state is ProjectsLoading;
+                      return SizedBox(
+                        height: 56,
+                        child: ElevatedButton.icon(
+                          onPressed: isLoading ? null : () => _submit(context),
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2.5),
+                                )
+                              : const Icon(Icons.send_outlined, size: 18),
+                          label: Text(
+                            isLoading ? 'Sending...' : 'Send Invite',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor:
+                                AppColors.primary.withValues(alpha: 0.5),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Cancel',
+                        style: TextStyle(
+                            color: _labelColor,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500)),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
-            
-            const SizedBox(height: 16),
-            
-            // Member List
-            _buildMemberCard(
-              name: 'Alex Rivera',
-              role: 'UI Architect',
-              avatarColor: Colors.deepOrange.shade100,
-            ),
-            const SizedBox(height: 12),
-            _buildMemberCard(
-              name: 'Sophie Chen',
-              role: 'UX Strategist',
-              avatarColor: Colors.teal.shade100,
-            ),
-            const SizedBox(height: 12),
-            _buildMemberCard(
-              name: 'Marcus Thorne',
-              role: 'Product Lead',
-              avatarColor: Colors.amber.shade100,
-            ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }
 
-  Widget _buildMemberCard({
-    required String name,
-    required String role,
-    required Color avatarColor,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  void _submit(BuildContext context) {
+    final emailOrPhone = _emailController.text.trim();
+    if (emailOrPhone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter an email address or phone number'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    context.read<ProjectsBloc>().add(
+          InviteMemberRequested(
+            widget.projectId,
+            InviteMemberRequest(emailOrPhone: emailOrPhone, role: _selectedRole),
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: avatarColor,
-            child: const Icon(Icons.person, color: Colors.black54),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimaryLight,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  role,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondaryLight,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.add, color: AppColors.primary, size: 20),
-              onPressed: () {},
-              padding: EdgeInsets.zero,
-            ),
-          ),
-        ],
+        );
+  }
+
+  Widget _buildSectionLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: _labelColor,
+        letterSpacing: 0.8,
       ),
     );
   }
 }
-

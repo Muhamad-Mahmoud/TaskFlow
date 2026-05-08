@@ -35,8 +35,8 @@ class TaskResponse {
   final AssigneeBrief createdBy;
   final List<SubtaskResponse> subtasks;
   final List<TagBrief> tags;
-  final int commentCount;
-  final int attachmentCount;
+  final int commentsCount;
+  final int attachmentsCount;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -53,8 +53,8 @@ class TaskResponse {
     required this.createdBy,
     required this.subtasks,
     required this.tags,
-    required this.commentCount,
-    required this.attachmentCount,
+    required this.commentsCount,
+    required this.attachmentsCount,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -92,7 +92,7 @@ class CreateTaskRequest {
   final String? description, status, priority;
   final DateTime? dueDate;
   final double? estimatedHours;
-  final String? assigneeId;
+  final String? assigneeEmailOrPhone;
 
   const CreateTaskRequest({
     required this.title,
@@ -102,7 +102,7 @@ class CreateTaskRequest {
     this.priority = 'Medium',
     this.dueDate,
     this.estimatedHours,
-    this.assigneeId,
+    this.assigneeEmailOrPhone,
   });
 
   Map<String, dynamic> toJson() => _$CreateTaskRequestToJson(this);
@@ -113,7 +113,7 @@ class UpdateTaskRequest {
   final String? title, description, status, priority;
   final DateTime? dueDate;
   final double? estimatedHours;
-  final String? assigneeId;
-  const UpdateTaskRequest({this.title, this.description, this.status, this.priority, this.dueDate, this.estimatedHours, this.assigneeId});
+  final String? assigneeEmailOrPhone;
+  const UpdateTaskRequest({this.title, this.description, this.status, this.priority, this.dueDate, this.estimatedHours, this.assigneeEmailOrPhone});
   Map<String, dynamic> toJson() => _$UpdateTaskRequestToJson(this);
 }

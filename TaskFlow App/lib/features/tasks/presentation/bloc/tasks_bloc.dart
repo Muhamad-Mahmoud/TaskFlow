@@ -26,6 +26,28 @@ class CreateTaskRequested extends TasksEvent {
   List<Object?> get props => [request];
 }
 
+class LoadTaskDetailRequested extends TasksEvent {
+  final String taskId;
+  const LoadTaskDetailRequested(this.taskId);
+  @override
+  List<Object?> get props => [taskId];
+}
+
+class UpdateTaskRequested extends TasksEvent {
+  final String taskId;
+  final UpdateTaskRequest request;
+  const UpdateTaskRequested(this.taskId, this.request);
+  @override
+  List<Object?> get props => [taskId, request];
+}
+
+class DeleteTaskRequested extends TasksEvent {
+  final String taskId;
+  const DeleteTaskRequested(this.taskId);
+  @override
+  List<Object?> get props => [taskId];
+}
+
 sealed class TasksState extends Equatable {
   @override
   List<Object?> get props => [];
@@ -50,6 +72,22 @@ class TasksFailure extends TasksState {
   List<Object?> get props => [message];
 }
 
+class TaskDetailLoading extends TasksState {}
+
+class TaskDetailLoaded extends TasksState {
+  final TaskResponse task;
+  TaskDetailLoaded(this.task);
+  @override
+  List<Object?> get props => [task];
+}
+
+class TaskDetailFailure extends TasksState {
+  final String message;
+  TaskDetailFailure(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
 @injectable
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final TasksRepository repo;
@@ -57,6 +95,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   TasksBloc(this.repo) : super(TasksInitial()) {
     on<LoadTasksRequested>(_onLoad);
     on<CreateTaskRequested>(_onCreate);
+    on<UpdateTaskRequested>(_onUpdate);
+    on<DeleteTaskRequested>(_onDelete);
+    on<LoadTaskDetailRequested>(_onLoadDetail);
   }
 
   Future<void> _onLoad(LoadTasksRequested event, Emitter<TasksState> emit) async {
@@ -76,6 +117,33 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       (_) {
         add(LoadTasksRequested(projectId: event.request.projectId));
       },
+    );
+  }
+
+  Future<void> _onUpdate(UpdateTaskRequested event, Emitter<TasksState> emit) async {
+    emit(TaskDetailLoading());
+    final r = await repo.update(event.taskId, event.request);
+    r.fold(
+      (f) => emit(TaskDetailFailure(f.message)),
+      (t) => emit(TaskDetailLoaded(t)), // Update task detail state directly
+    );
+  }
+
+  Future<void> _onDelete(DeleteTaskRequested event, Emitter<TasksState> emit) async {
+    emit(TasksLoading());
+    final r = await repo.delete(event.taskId);
+    r.fold(
+      (f) => emit(TasksFailure(f.message)),
+      (_) => emit(TasksInitial()), // Go back to initial to signal delete success
+    );
+  }
+
+  Future<void> _onLoadDetail(LoadTaskDetailRequested event, Emitter<TasksState> emit) async {
+    emit(TaskDetailLoading());
+    final r = await repo.get(event.taskId);
+    r.fold(
+      (f) => emit(TaskDetailFailure(f.message)),
+      (t) => emit(TaskDetailLoaded(t)),
     );
   }
 }

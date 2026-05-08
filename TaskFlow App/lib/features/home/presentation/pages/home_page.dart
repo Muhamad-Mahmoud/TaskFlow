@@ -6,6 +6,7 @@ import 'package:taskflow/core/di/injection.dart';
 import 'package:taskflow/features/home/presentation/bloc/home_bloc.dart';
 import 'package:taskflow/features/home/domain/models/home_stats.dart';
 import 'package:taskflow/features/tasks/domain/models/task_models.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -62,12 +63,15 @@ class HomePage extends StatelessWidget {
           else
             ...tasks.map((task) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: _buildTaskCard(
-                title: task.title,
-                time: task.dueDate != null ? task.dueDate.toString().split(' ')[0] : 'No date',
-                category: task.projectName,
-                dotColor: _getPriorityColor(task.priority),
-                delay: 400,
+              child: GestureDetector(
+                onTap: () => context.push('/task-details', extra: {'taskId': task.id}),
+                child: _buildTaskCard(
+                  title: task.title,
+                  time: task.dueDate != null ? task.dueDate.toString().split(' ')[0] : 'No date',
+                  category: task.projectName,
+                  dotColor: _getPriorityColor(task.priority),
+                  delay: 400,
+                ),
               ),
             )),
         ],

@@ -15,7 +15,7 @@ public interface ITaskService
 {
 	Task<TaskDetailResponse> CreateAsync(CreateTaskRequest req, CancellationToken ct);
 	Task<TaskDetailResponse> GetAsync(Guid id, CancellationToken ct);
-	Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest req, CancellationToken ct);
+	Task<TaskDetailResponse> UpdateAsync(Guid id, UpdateTaskRequest req, CancellationToken ct);
 	Task UpdateStatusAsync(Guid id, UpdateStatusRequest req, CancellationToken ct);
 	Task ReorderAsync(Guid id, ReorderTaskRequest req, CancellationToken ct);
 	Task DeleteAsync(Guid id, CancellationToken ct);
@@ -45,10 +45,20 @@ public class TaskService : ITaskService
 		var status = Enum.Parse<DomainTaskStatus>(req.Status, true);
 		var nextPos = await _uow.Tasks.GetMaxPositionAsync(req.ProjectId, status, ct) + 1;
 
+		Guid? assigneeId = null;
+		if (!string.IsNullOrWhiteSpace(req.AssigneeEmailOrPhone))
+		{
+			var user = await _uow.Users.GetByEmailOrPhoneAsync(req.AssigneeEmailOrPhone, ct)
+				?? throw new NotFoundException($"User with email or phone {req.AssigneeEmailOrPhone} not found.");
+			if (!await _uow.ProjectMembers.ExistsAsync(m => m.ProjectId == req.ProjectId && m.UserId == user.Id, ct))
+				throw new ConflictException("Assignee is not a member of the project.");
+			assigneeId = user.Id;
+		}
+
 		var task = new TaskItem
 		{
 			Title = req.Title, Description = req.Description,
-			ProjectId = req.ProjectId, AssigneeId = req.AssigneeId,
+			ProjectId = req.ProjectId, AssigneeId = assigneeId,
 			Status = status, Priority = Enum.Parse<TaskPriority>(req.Priority, true),
 			DueDate = req.DueDate, EstimatedHours = req.EstimatedHours,
 			CreatedById = Me, Position = nextPos
@@ -70,12 +80,27 @@ public class TaskService : ITaskService
 
 	public Task<TaskDetailResponse> GetAsync(Guid id, CancellationToken ct) => BuildDetailAsync(id, ct);
 
-	public async Task<TaskResponse> UpdateAsync(Guid id, UpdateTaskRequest req, CancellationToken ct)
+	public async Task<TaskDetailResponse> UpdateAsync(Guid id, UpdateTaskRequest req, CancellationToken ct)
 	{
 		var t = await _uow.Tasks.GetByIdAsync(id, ct) ?? throw new NotFoundException(nameof(TaskItem), id);
 		if (!await _uow.Projects.IsMemberAsync(t.ProjectId, Me, ct)) throw new ForbiddenException();
 
-		t.Title = req.Title; t.Description = req.Description; t.AssigneeId = req.AssigneeId;
+		t.Title = req.Title; t.Description = req.Description;
+		if (req.AssigneeEmailOrPhone != null)
+		{
+			if (string.IsNullOrWhiteSpace(req.AssigneeEmailOrPhone)) 
+			{
+				t.AssigneeId = null;
+			}
+			else
+			{
+				var user = await _uow.Users.GetByEmailOrPhoneAsync(req.AssigneeEmailOrPhone, ct)
+					?? throw new NotFoundException($"User with email or phone {req.AssigneeEmailOrPhone} not found.");
+				if (!await _uow.ProjectMembers.ExistsAsync(m => m.ProjectId == t.ProjectId && m.UserId == user.Id, ct))
+					throw new ConflictException("Assignee is not a member of the project.");
+				t.AssigneeId = user.Id;
+			}
+		}
 		t.Status = Enum.Parse<DomainTaskStatus>(req.Status, true);
 		t.Priority = Enum.Parse<TaskPriority>(req.Priority, true);
 		t.DueDate = req.DueDate; t.EstimatedHours = req.EstimatedHours;
@@ -83,7 +108,7 @@ public class TaskService : ITaskService
 
 		_uow.Tasks.Update(t);
 		await _uow.SaveChangesAsync(ct);
-		return _mapper.Map<TaskResponse>(t);
+		return await BuildDetailAsync(t.Id, ct);
 	}
 
 	public async Task UpdateStatusAsync(Guid id, UpdateStatusRequest req, CancellationToken ct)

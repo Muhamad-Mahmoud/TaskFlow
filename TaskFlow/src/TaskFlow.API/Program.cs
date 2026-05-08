@@ -3,6 +3,9 @@ using TaskFlow.API.Middleware;
 using TaskFlow.Application;
 using TaskFlow.Infrastructure;
 
+// Fix for Npgsql 6+: allow DateTime with Kind=Unspecified (from JSON / date pickers)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add layers

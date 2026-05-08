@@ -13,6 +13,8 @@ abstract class ProjectsRepository {
   Future<Either<Failure, ProjectResponse>> get(String id);
   Future<Either<Failure, ProjectResponse>> update(String id, UpdateProjectRequest r);
   Future<Either<Failure, Unit>> delete(String id);
+  Future<Either<Failure, ProjectStatsResponse>> getStats(String id);
+  Future<Either<Failure, ProjectMemberResponse>> invite(String id, InviteMemberRequest r);
 }
 
 @LazySingleton(as: ProjectsRepository)
@@ -89,5 +91,32 @@ class ProjectsRepositoryImpl implements ProjectsRepository {
       return Left(ServerFailure(e.toString()));
     }
 	}
-}
 
+	@override
+	Future<Either<Failure, ProjectStatsResponse>> getStats(String id) async {
+		try {
+			final res = await remote.stats(id);
+			return Right(res);
+		} on ServerFailure catch (f) {
+      return Left(f);
+    } on DioException catch (e) {
+      return Left(ErrorMapper.fromDio(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+	}
+
+	@override
+	Future<Either<Failure, ProjectMemberResponse>> invite(String id, InviteMemberRequest r) async {
+		try {
+			final res = await remote.invite(id, r);
+			return Right(res);
+		} on ServerFailure catch (f) {
+      return Left(f);
+    } on DioException catch (e) {
+      return Left(ErrorMapper.fromDio(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+	}
+}

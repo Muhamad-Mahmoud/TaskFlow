@@ -8,6 +8,6 @@ public record CreateTaskRequest(
     string? Priority,
     DateTime? DueDate,
     double? EstimatedHours,
-    Guid? AssigneeId,
+    string? AssigneeEmailOrPhone,
     List<CreateSubtaskRequest>? Subtasks,
     List<Guid>? TagIds);
