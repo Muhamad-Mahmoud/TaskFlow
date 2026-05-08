@@ -1,0 +1,77 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Test Results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NuGet
+*.nupkg
+*.nuspec
+*.snupkg
+.nuget/
+packages/
+.nuget/packages/
+nuget.config
+
+# Entity Framework
+*.edmx.diagram
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+# Coverage Reports
+coverage*/
+opencover*/
+
+# Local environment variables
+*.local.json
+.env
+.env.local
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Build artifacts
+artifacts/
+dist/
+
+# Rider
+.idea/
+*.sln.iml

@@ -1,0 +1,81 @@
+name: taskflow
+description: Task-Flow collaborative task management
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.8.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State + routing
+  flutter_bloc: ^9.1.0
+  bloc_concurrency: ^0.3.0
+  equatable: ^2.0.5
+  go_router: ^14.6.2
+
+  # Network
+  dio: ^5.7.0
+  pretty_dio_logger: ^1.4.0
+
+  # Storage
+  flutter_secure_storage: ^9.2.2
+  hive_ce_flutter: ^2.2.0
+
+  # DI / FP
+  get_it: ^8.0.3
+  injectable: ^2.5.1
+  dartz: ^0.10.1
+
+  # UI
+  flutter_animate: ^4.5.0
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  pin_code_fields: ^8.0.1
+  flutter_colorpicker: ^1.1.0
+  omni_datetime_picker: ^2.0.6
+
+  # Files
+  image_picker: ^1.1.2
+  image_cropper: ^8.0.2
+  file_picker: ^8.1.4
+  open_filex: ^4.5.0
+  permission_handler: ^11.3.1
+
+  # Firebase / FCM
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+  flutter_local_notifications: ^17.2.4
+  firebase_crashlytics: ^4.1.3
+
+  # Misc
+  connectivity_plus: ^6.1.0
+  rxdart: ^0.28.0
+  intl: ^0.19.0
+  json_annotation: ^4.11.0
+  freezed_annotation: ^3.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.15.0
+  json_serializable: ^6.13.2
+  injectable_generator: ^2.12.1
+  hive_ce_generator: ^1.8.0
+  mocktail: ^1.0.4
+  bloc_test: ^10.0.0
+  freezed: ^3.2.5
+
+flutter:
+  uses-material-design: true
+  # assets:
+  #   - assets/images/
+  #   - assets/svg/

@@ -1,0 +1,10 @@
+namespace TaskFlow.Domain.Enums;
+
+public enum TaskStatus
+{
+    Todo,
+    InProgress,
+    Review,
+    Blocked,
+    Done
+}

@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- NU1903: AutoMapper GHSA-rvv3-g6hj-g44x — no fixed version exists yet; suppressed until upstream resolves. -->
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
+  </PropertyGroup>
+</Project>
