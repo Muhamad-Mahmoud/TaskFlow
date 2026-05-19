@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import '../di/injection.dart';
+import '../utils/auth_event_bus.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
@@ -8,7 +10,6 @@ import '../../features/tasks/presentation/pages/task_details_page.dart';
 import '../../features/projects/presentation/pages/create_project_page.dart';
 import '../../features/projects/presentation/pages/project_details_page.dart';
 import '../../features/projects/presentation/pages/invite_member_page.dart';
-import '../../features/admin/presentation/pages/admin_dashboard.dart';
 import '../widgets/app_shell.dart';
 
 final appRouter = GoRouter(
@@ -74,9 +75,13 @@ final appRouter = GoRouter(
         return InviteMemberPage(projectId: projectId);
       },
     ),
-    GoRoute(
-      path: '/admin',
-      builder: (context, state) => const AdminDashboard(),
-    ),
   ],
 );
+
+// Listen to the auth event bus globally and redirect to /login when logged out
+final _authBusSubscription = getIt<AuthEventBus>().stream.listen((event) {
+  if (event == AuthEvent.loggedOut) {
+    appRouter.go('/login');
+  }
+});
+

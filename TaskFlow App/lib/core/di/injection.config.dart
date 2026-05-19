@@ -28,28 +28,18 @@ import 'package:taskflow/features/auth/domain/usecases/auth_usecases.dart'
     as _i385;
 import 'package:taskflow/features/auth/presentation/bloc/auth_bloc.dart'
     as _i662;
-import 'package:taskflow/features/comments/data/datasources/comments_remote_datasource.dart'
-    as _i776;
-import 'package:taskflow/features/comments/data/repositories/comments_repository_impl.dart'
-    as _i378;
-import 'package:taskflow/features/comments/presentation/bloc/comments_bloc.dart'
-    as _i167;
 import 'package:taskflow/features/home/data/datasources/home_remote_datasource.dart'
     as _i870;
 import 'package:taskflow/features/home/domain/repositories/home_repository.dart'
     as _i45;
 import 'package:taskflow/features/home/presentation/bloc/home_bloc.dart'
     as _i522;
-import 'package:taskflow/features/notifications/data/datasources/notifications_remote_datasource.dart'
-    as _i746;
 import 'package:taskflow/features/projects/data/datasources/project_remote_datasource.dart'
     as _i119;
 import 'package:taskflow/features/projects/data/repositories/projects_repository_impl.dart'
     as _i750;
 import 'package:taskflow/features/projects/presentation/bloc/projects_bloc.dart'
     as _i794;
-import 'package:taskflow/features/tags/data/datasources/tags_remote_datasource.dart'
-    as _i660;
 import 'package:taskflow/features/tasks/data/datasources/tasks_remote_datasource.dart'
     as _i925;
 import 'package:taskflow/features/tasks/data/repositories/tasks_repository_impl.dart'
@@ -88,20 +78,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i768.AuthRemoteDataSource>(
       () => _i768.AuthRemoteDataSource(gh<_i361.Dio>()),
     );
-    gh.factory<_i776.CommentsRemoteDataSource>(
-      () => _i776.CommentsRemoteDataSource(gh<_i361.Dio>()),
-    );
     gh.factory<_i870.HomeRemoteDataSource>(
       () => _i870.HomeRemoteDataSource(gh<_i361.Dio>()),
     );
-    gh.factory<_i746.NotificationsRemoteDataSource>(
-      () => _i746.NotificationsRemoteDataSource(gh<_i361.Dio>()),
-    );
     gh.factory<_i119.ProjectsRemoteDataSource>(
       () => _i119.ProjectsRemoteDataSource(gh<_i361.Dio>()),
-    );
-    gh.factory<_i660.TagsRemoteDataSource>(
-      () => _i660.TagsRemoteDataSource(gh<_i361.Dio>()),
     );
     gh.factory<_i925.TasksRemoteDataSource>(
       () => _i925.TasksRemoteDataSource(gh<_i361.Dio>()),
@@ -111,9 +92,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i536.TasksRepository>(
       () => _i536.TasksRepositoryImpl(gh<_i925.TasksRemoteDataSource>()),
-    );
-    gh.lazySingleton<_i378.CommentsRepository>(
-      () => _i378.CommentsRepositoryImpl(gh<_i776.CommentsRemoteDataSource>()),
     );
     gh.factory<_i522.HomeBloc>(
       () => _i522.HomeBloc(
@@ -152,9 +130,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i385.LogoutUseCase>(),
         gh<_i697.AuthRepository>(),
       ),
-    );
-    gh.factory<_i167.CommentsBloc>(
-      () => _i167.CommentsBloc(gh<_i378.CommentsRepository>()),
     );
     gh.factory<_i794.ProjectsBloc>(
       () => _i794.ProjectsBloc(gh<_i750.ProjectsRepository>()),

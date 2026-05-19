@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taskflow/core/constants/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/storage/secure_storage.dart';
+import '../../../auth/domain/models/auth_models.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,9 +15,36 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool pushNotifications = true;
   bool emailDigests = false;
+  UserDto? currentUser;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final storage = getIt<SecureStorage>();
+    final user = await storage.readUser();
+    if (mounted) {
+      setState(() {
+        currentUser = user;
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primary,
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 16.0),
       child: Column(
@@ -29,11 +59,20 @@ class _SettingsPageState extends State<SettingsPage> {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.teal.shade200,
+                      color: Colors.teal.shade300,
                       borderRadius: BorderRadius.circular(24),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.person, size: 64, color: Colors.white),
+                    child: Center(
+                      child: Text(
+                        currentUser?.fullName.isNotEmpty == true 
+                            ? currentUser!.fullName[0].toUpperCase() 
+                            : 'U',
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -62,18 +101,18 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Alex Thorne',
-                      style: TextStyle(
-                        fontSize: 28,
+                    Text(
+                      currentUser?.fullName ?? 'Guest User',
+                      style: const TextStyle(
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimaryLight,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'alex.thorne@taskflow.io',
-                      style: TextStyle(
+                    Text(
+                      currentUser?.email ?? 'guest@taskflow.io',
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondaryLight,
                       ),
@@ -85,9 +124,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: AppColors.primary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'PRO PLAN',
-                        style: TextStyle(
+                      child: Text(
+                        currentUser?.role.toUpperCase() ?? 'MEMBER',
+                        style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           color: AppColors.primary,
@@ -190,8 +229,12 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 48),
           
           OutlinedButton.icon(
-            onPressed: () {
-              context.go('/login');
+            onPressed: () async {
+              // Clear tokens on logout
+              await getIt<SecureStorage>().clearTokens();
+              if (context.mounted) {
+                context.go('/login');
+              }
             },
             icon: Icon(Icons.logout, color: AppColors.error),
             label: const Text('Sign Out', style: TextStyle(color: AppColors.error, fontSize: 16, fontWeight: FontWeight.w600)),
@@ -256,4 +299,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-

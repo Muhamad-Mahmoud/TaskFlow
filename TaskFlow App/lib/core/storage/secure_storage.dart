@@ -42,6 +42,7 @@ class SecureStorage {
   Future<void> clearTokens() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _refreshKey);
+    await _storage.delete(key: _userKey);
   }
 
   Future<void> clearAll() async {

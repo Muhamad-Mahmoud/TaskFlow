@@ -10,14 +10,14 @@ class AppConfig {
   factory AppConfig.dev() {
     return const AppConfig(
       baseUrl: 'https://task-flowapi.runasp.net',
-      enableLogs: true,
+      enableLogs: false,
     );
   }
 
   factory AppConfig.prod() {
     return const AppConfig(
       baseUrl: 'https://task-flowapi.runasp.net',
-      enableLogs: true,
+      enableLogs: false,
     );
   }
 }
