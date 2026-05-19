@@ -167,3 +167,54 @@ Map<String, dynamic> _$UpdateTaskRequestToJson(UpdateTaskRequest instance) =>
       'estimatedHours': instance.estimatedHours,
       'assigneeEmailOrPhone': instance.assigneeEmailOrPhone,
     };
+
+UpdateTaskStatusRequest _$UpdateTaskStatusRequestFromJson(
+  Map<String, dynamic> json,
+) => UpdateTaskStatusRequest(status: json['status'] as String);
+
+Map<String, dynamic> _$UpdateTaskStatusRequestToJson(
+  UpdateTaskStatusRequest instance,
+) => <String, dynamic>{'status': instance.status};
+
+UpdateTaskPositionRequest _$UpdateTaskPositionRequestFromJson(
+  Map<String, dynamic> json,
+) => UpdateTaskPositionRequest(
+  taskId: json['taskId'] as String,
+  newPosition: (json['newPosition'] as num).toInt(),
+  newStatus: json['newStatus'] as String?,
+);
+
+Map<String, dynamic> _$UpdateTaskPositionRequestToJson(
+  UpdateTaskPositionRequest instance,
+) => <String, dynamic>{
+  'taskId': instance.taskId,
+  'newPosition': instance.newPosition,
+  'newStatus': instance.newStatus,
+};
+
+CreateSubtaskRequest _$CreateSubtaskRequestFromJson(
+  Map<String, dynamic> json,
+) => CreateSubtaskRequest(
+  title: json['title'] as String,
+  position: (json['position'] as num).toInt(),
+);
+
+Map<String, dynamic> _$CreateSubtaskRequestToJson(
+  CreateSubtaskRequest instance,
+) => <String, dynamic>{'title': instance.title, 'position': instance.position};
+
+UpdateSubtaskRequest _$UpdateSubtaskRequestFromJson(
+  Map<String, dynamic> json,
+) => UpdateSubtaskRequest(
+  title: json['title'] as String?,
+  position: (json['position'] as num?)?.toInt(),
+  isCompleted: json['isCompleted'] as bool?,
+);
+
+Map<String, dynamic> _$UpdateSubtaskRequestToJson(
+  UpdateSubtaskRequest instance,
+) => <String, dynamic>{
+  'title': instance.title,
+  'position': instance.position,
+  'isCompleted': instance.isCompleted,
+};

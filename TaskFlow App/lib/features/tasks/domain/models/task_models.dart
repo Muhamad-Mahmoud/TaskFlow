@@ -117,3 +117,36 @@ class UpdateTaskRequest {
   const UpdateTaskRequest({this.title, this.description, this.status, this.priority, this.dueDate, this.estimatedHours, this.assigneeEmailOrPhone});
   Map<String, dynamic> toJson() => _$UpdateTaskRequestToJson(this);
 }
+
+@JsonSerializable()
+class UpdateTaskStatusRequest {
+  final String status;
+  const UpdateTaskStatusRequest({required this.status});
+  Map<String, dynamic> toJson() => _$UpdateTaskStatusRequestToJson(this);
+}
+
+@JsonSerializable()
+class UpdateTaskPositionRequest {
+  final String taskId;
+  final int newPosition;
+  final String? newStatus;
+  const UpdateTaskPositionRequest({required this.taskId, required this.newPosition, this.newStatus});
+  Map<String, dynamic> toJson() => _$UpdateTaskPositionRequestToJson(this);
+}
+
+@JsonSerializable()
+class CreateSubtaskRequest {
+  final String title;
+  final int position;
+  const CreateSubtaskRequest({required this.title, required this.position});
+  Map<String, dynamic> toJson() => _$CreateSubtaskRequestToJson(this);
+}
+
+@JsonSerializable()
+class UpdateSubtaskRequest {
+  final String? title;
+  final int? position;
+  final bool? isCompleted;
+  const UpdateSubtaskRequest({this.title, this.position, this.isCompleted});
+  Map<String, dynamic> toJson() => _$UpdateSubtaskRequestToJson(this);
+}

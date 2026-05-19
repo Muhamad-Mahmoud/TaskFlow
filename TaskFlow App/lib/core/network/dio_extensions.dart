@@ -47,5 +47,23 @@ extension DioApi on Dio {
 			throw ServerFailure(env.message ?? 'Delete failed', errors: env.errors);
 		}
 	}
+
+  Future<void> postOk(String path, {Object? data}) async {
+    final r = await post(path, data: data);
+    final env = ApiResponse<dynamic>.fromJson(
+      r.data as Map<String, dynamic>, (j) => j);
+    if (!env.succeeded) {
+      throw ServerFailure(env.message ?? 'Post failed', errors: env.errors);
+    }
+  }
+
+  Future<void> patchOk(String path, {Object? data}) async {
+    final r = await patch(path, data: data);
+    final env = ApiResponse<dynamic>.fromJson(
+      r.data as Map<String, dynamic>, (j) => j);
+    if (!env.succeeded) {
+      throw ServerFailure(env.message ?? 'Patch failed', errors: env.errors);
+    }
+  }
 }
 

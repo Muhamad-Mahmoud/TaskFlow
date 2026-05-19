@@ -10,7 +10,8 @@ import '../../domain/models/task_models.dart';
 
 class CreateTaskPage extends StatefulWidget {
   final String? preselectedProjectId;
-  const CreateTaskPage({super.key, this.preselectedProjectId});
+  final TaskResponse? taskToEdit;
+  const CreateTaskPage({super.key, this.preselectedProjectId, this.taskToEdit});
 
   @override
   State<CreateTaskPage> createState() => _CreateTaskPageState();
@@ -28,6 +29,25 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   void initState() {
     super.initState();
     _selectedProjectId = widget.preselectedProjectId;
+    
+    if (widget.taskToEdit != null) {
+      final task = widget.taskToEdit!;
+      _titleController.text = task.title;
+      _descriptionController.text = task.description ?? '';
+      _selectedProjectId = task.projectId;
+      _selectedDueDate = task.dueDate;
+      
+      switch (task.priority) {
+        case 'Low': _selectedPriority = 0; break;
+        case 'High': _selectedPriority = 2; break;
+        default: _selectedPriority = 1; break; // Medium
+      }
+      
+      if (task.assignee != null) {
+        // We only have the assignee name/id from the summary, but the endpoint takes EmailOrPhone.
+        // We can't prefill email if we only have fullName, so we leave it empty or prefill with name (though it might fail if user doesn't change it to email/phone).
+      }
+    }
   }
 
   static const _bgColor = Color(0xFFF8FAFF);
@@ -76,9 +96,9 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Create Task',
-                style: TextStyle(
+              Text(
+                widget.taskToEdit != null ? 'Edit Task' : 'Create Task',
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: _textColor,
@@ -86,9 +106,11 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Fill in the details below to create a new task.',
-                style: TextStyle(fontSize: 14, color: _labelColor),
+              Text(
+                widget.taskToEdit != null 
+                    ? 'Update the details below to edit the task.'
+                    : 'Fill in the details below to create a new task.',
+                style: const TextStyle(fontSize: 14, color: _labelColor),
               ),
               const SizedBox(height: 32),
 
@@ -266,9 +288,9 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    'Create Task',
-                    style: TextStyle(
+                  child: Text(
+                    widget.taskToEdit != null ? 'Save Changes' : 'Create Task',
+                    style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
@@ -312,16 +334,27 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
     final priorities = ['Low', 'Medium', 'High'];
     final assigneeIdStr = _assigneeController.text.trim();
-    final request = CreateTaskRequest(
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
-      projectId: _selectedProjectId!,
-      priority: priorities[_selectedPriority],
-      dueDate: _selectedDueDate,
-      assigneeEmailOrPhone: assigneeIdStr.isNotEmpty ? assigneeIdStr : null,
-    );
-
-    getIt<TasksBloc>().add(CreateTaskRequested(request));
+    
+    if (widget.taskToEdit != null) {
+      final request = UpdateTaskRequest(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        priority: priorities[_selectedPriority],
+        dueDate: _selectedDueDate,
+        assigneeEmailOrPhone: assigneeIdStr.isNotEmpty ? assigneeIdStr : null,
+      );
+      getIt<TasksBloc>().add(UpdateTaskRequested(widget.taskToEdit!.id, request));
+    } else {
+      final request = CreateTaskRequest(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        projectId: _selectedProjectId!,
+        priority: priorities[_selectedPriority],
+        dueDate: _selectedDueDate,
+        assigneeEmailOrPhone: assigneeIdStr.isNotEmpty ? assigneeIdStr : null,
+      );
+      getIt<TasksBloc>().add(CreateTaskRequested(request));
+    }
     context.pop();
   }
 

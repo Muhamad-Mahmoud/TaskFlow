@@ -9,15 +9,15 @@ class AppConfig {
 
   factory AppConfig.dev() {
     return const AppConfig(
-      baseUrl: 'http://localhost:5299', // Updated to user's local API
+      baseUrl: 'https://task-flowapi.runasp.net',
       enableLogs: true,
     );
   }
 
   factory AppConfig.prod() {
     return const AppConfig(
-      baseUrl: 'https://api.taskflow.com',
-      enableLogs: false,
+      baseUrl: 'https://task-flowapi.runasp.net',
+      enableLogs: true,
     );
   }
 }

@@ -17,18 +17,48 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const TasksPage(),
-    const ProjectsPage(),
-    const SettingsPage(),
+  // Keys allow us to call refresh methods on the child pages.
+  final _homeKey = GlobalKey<HomePageState>();
+  final _tasksKey = GlobalKey<TasksPageState>();
+  final _projectsKey = GlobalKey<ProjectsPageState>();
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomePage(key: _homeKey),
+      TasksPage(key: _tasksKey),
+      ProjectsPage(key: _projectsKey),
+      const SettingsPage(),
+    ];
+  }
+
+  void _refreshCurrentPage() {
+    if (_currentIndex == 0) {
+      _homeKey.currentState?.refresh();
+    } else if (_currentIndex == 1) {
+      _tasksKey.currentState?.refresh();
+    } else if (_currentIndex == 2) {
+      _projectsKey.currentState?.refresh();
+    }
+  }
+
+  static const _tabTitles = ['TaskFlow', 'My Tasks', 'Projects', 'Settings'];
+  static const _tabIcons = [
+    Icons.grid_view_rounded,
+    Icons.task_alt_rounded,
+    Icons.folder_copy_rounded,
+    Icons.settings_rounded,
   ];
+  static const _tabLabels = ['Home', 'Tasks', 'Projects', 'Settings'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      appBar: _currentIndex == 0 ? _buildHomeAppBar() : null,
+      appBar: _buildAppBar(),
       body: Stack(
         children: [
           // Use IndexedStack to preserve state between tabs
@@ -60,12 +90,10 @@ class _AppShellState extends State<AppShell> {
                 borderRadius: BorderRadius.circular(24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildNavItem(0, Icons.grid_view_rounded, 'Home'),
-                    _buildNavItem(1, Icons.task_alt_rounded, 'Tasks'),
-                    _buildNavItem(2, Icons.folder_copy_rounded, 'Projects'),
-                    _buildNavItem(3, Icons.settings_rounded, 'Settings'),
-                  ],
+                  children: List.generate(
+                    4,
+                    (i) => _buildNavItem(i, _tabIcons[i], _tabLabels[i]),
+                  ),
                 ),
               ),
             ),
@@ -75,12 +103,13 @@ class _AppShellState extends State<AppShell> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 90.0),
         child: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             if (_currentIndex == 2) {
-              context.push('/create-project');
+              await context.push('/create-project');
             } else {
-              context.push('/create-task');
+              await context.push('/create-task');
             }
+            _refreshCurrentPage();
           },
           backgroundColor: AppColors.primary,
           elevation: 8,
@@ -91,10 +120,39 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
+  PreferredSizeWidget _buildAppBar() {
+    if (_currentIndex == 0) return _buildHomeAppBar();
+    return AppBar(
+      backgroundColor: AppColors.backgroundLight,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      title: Text(
+        _tabTitles[_currentIndex],
+        style: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
+          color: AppColors.textPrimaryLight,
+          letterSpacing: -0.5,
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Divider(height: 1, color: AppColors.borderLight.withValues(alpha: 0.5)),
+      ),
+    );
+  }
+
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
+      onTap: () {
+        if (_currentIndex == index) {
+          _refreshCurrentPage();
+        } else {
+          setState(() => _currentIndex = index);
+          _refreshCurrentPage();
+        }
+      },
       behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,

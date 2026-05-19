@@ -72,12 +72,7 @@ class _ProjectDetailsViewState extends State<_ProjectDetailsView>
               overflow: TextOverflow.ellipsis,
             ),
             centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Color(0xFF64748B)),
-                onPressed: () {},
-              ),
-            ],
+            actions: [],
           ),
           floatingActionButton: isLoaded
               ? FloatingActionButton(
@@ -306,23 +301,20 @@ class _ProjectDetailsViewState extends State<_ProjectDetailsView>
                           ],
                         ),
 
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 44,
-                          child: ElevatedButton.icon(
-                            onPressed: () => context.push('/invite-member',
-                                extra: {'projectId': project.id}),
-                            icon: const Icon(Icons.person_add_outlined, size: 18),
-                            label: const Text('Invite Members',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14)),
-                              elevation: 0,
-                            ),
+                        ElevatedButton.icon(
+                          onPressed: () => context.push('/invite-member',
+                              extra: {'projectId': project.id}),
+                          icon: const Icon(Icons.person_add_outlined, size: 20),
+                          label: const Text('Invite Members',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w600)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                            elevation: 0,
                           ),
                         ),
                       ],
@@ -338,6 +330,7 @@ class _ProjectDetailsViewState extends State<_ProjectDetailsView>
             delegate: _SliverAppBarDelegate(
               TabBar(
                 controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -385,7 +378,7 @@ class _ProjectDetailsViewState extends State<_ProjectDetailsView>
       );
     }
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 100),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
       itemCount: members.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, i) {

@@ -39,7 +39,11 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
         final projectId = extra?['projectId'] as String?;
-        return CreateTaskPage(preselectedProjectId: projectId);
+        final taskToEdit = extra?['taskToEdit'];
+        return CreateTaskPage(
+          preselectedProjectId: projectId,
+          taskToEdit: taskToEdit,
+        );
       },
     ),
     GoRoute(

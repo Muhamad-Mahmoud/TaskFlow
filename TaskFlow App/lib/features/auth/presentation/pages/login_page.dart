@@ -137,12 +137,14 @@ class _LoginPageState extends State<LoginPage> {
                           _buildLabel('Email Address'),
                           const SizedBox(height: 10),
                           TextField(
-                            style: const TextStyle(color: AppColors.textPrimaryLight),
+                            style: const TextStyle(color: Colors.black87),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: 'name@company.com',
                               prefixIcon: const Icon(Icons.mail_outline_rounded),
+                              filled: true,
+                              fillColor: Colors.white,
                               hintStyle: TextStyle(color: AppColors.textSecondaryLight.withValues(alpha: 0.4)),
                             ),
                           ),
@@ -168,12 +170,14 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 10),
                           TextField(
-                            style: const TextStyle(color: AppColors.textPrimaryLight),
+                            style: const TextStyle(color: Colors.black87),
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
                               hintText: '••••••••',
                               prefixIcon: const Icon(Icons.lock_outline_rounded),
+                              filled: true,
+                              fillColor: Colors.white,
                               hintStyle: TextStyle(color: AppColors.textSecondaryLight.withValues(alpha: 0.4)),
                             ),
                           ),
@@ -215,39 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
                     
-                    const SizedBox(height: 40),
-                    
-                    // Divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: AppColors.borderLight.withValues(alpha: 0.5))),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'or continue with',
-                            style: TextStyle(
-                              color: AppColors.textSecondaryLight.withValues(alpha: 0.6),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider(color: AppColors.borderLight.withValues(alpha: 0.5))),
-                      ],
-                    ).animate().fadeIn(delay: 700.ms),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Social Buttons
-                    Row(
-                      children: [
-                        _buildSocialButton(Icons.g_mobiledata, 'Google', Colors.red),
-                        const SizedBox(width: 16),
-                        _buildSocialButton(Icons.apple, 'Apple', Colors.black),
-                      ],
-                    ).animate().fadeIn(delay: 800.ms),
-                    
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 24),
                     
                     // Signup Link
                     Row(
@@ -265,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ],
-                    ).animate().fadeIn(delay: 900.ms),
+                    ).animate().fadeIn(delay: 700.ms),
                     
                     const SizedBox(height: 32),
                   ],
@@ -285,21 +257,6 @@ class _LoginPageState extends State<LoginPage> {
         fontSize: 15,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimaryLight,
-      ),
-    );
-  }
-
-  Widget _buildSocialButton(IconData icon, String label, Color color) {
-    return Expanded(
-      child: OutlinedButton.icon(
-        onPressed: () {},
-        icon: Icon(icon, color: color, size: 28),
-        label: Text(label, style: const TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold)),
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          side: const BorderSide(color: AppColors.borderLight),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
       ),
     );
   }

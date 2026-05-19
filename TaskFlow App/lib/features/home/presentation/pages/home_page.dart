@@ -8,13 +8,30 @@ import 'package:taskflow/features/home/domain/models/home_stats.dart';
 import 'package:taskflow/features/tasks/domain/models/task_models.dart';
 import 'package:go_router/go_router.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  late final HomeBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = getIt<HomeBloc>()..add(const HomeEvent.started());
+  }
+
+  void refresh() {
+    _bloc.add(const HomeEvent.started());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<HomeBloc>()..add(const HomeEvent.started()),
+    return BlocProvider.value(
+      value: _bloc,
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return state.map(
@@ -53,27 +70,55 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 40),
           
           // Section Title
-          _buildSectionHeader('Priority Tasks', () {}),
+          _buildSectionHeader('Recent Tasks', () {
+            // Can navigate to tasks tab if needed
+          }),
           
           const SizedBox(height: 16),
           
           // Task List
           if (tasks.isEmpty)
-            const Center(child: Text('No tasks found'))
-          else
-            ...tasks.map((task) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: GestureDetector(
-                onTap: () => context.push('/task-details', extra: {'taskId': task.id}),
-                child: _buildTaskCard(
-                  title: task.title,
-                  time: task.dueDate != null ? task.dueDate.toString().split(' ')[0] : 'No date',
-                  category: task.projectName,
-                  dotColor: _getPriorityColor(task.priority),
-                  delay: 400,
-                ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.borderLight.withValues(alpha: 0.5)),
               ),
-            )),
+              child: const Column(
+                children: [
+                  Icon(Icons.task_outlined, size: 48, color: AppColors.borderLight),
+                  SizedBox(height: 16),
+                  Text(
+                    'No tasks assigned to you yet',
+                    style: TextStyle(
+                      color: AppColors.textSecondaryLight,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            ...tasks.asMap().entries.map((entry) {
+              final task = entry.value;
+              final isDone = task.status == 'Done' || task.status == 'Completed';
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: GestureDetector(
+                  onTap: () => context.push('/task-details', extra: {'taskId': task.id}),
+                  child: _buildTaskCard(
+                    title: task.title,
+                    time: task.dueDate != null ? task.dueDate.toString().split(' ')[0] : 'No date',
+                    category: task.projectName,
+                    dotColor: isDone ? const Color(0xFF22C55E) : _getPriorityColor(task.priority),
+                    delay: 400 + (entry.key * 100),
+                    isDone: isDone,
+                  ),
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -170,6 +215,7 @@ class HomePage extends StatelessWidget {
     required String category,
     required Color dotColor,
     required int delay,
+    bool isDone = false,
   }) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -194,7 +240,9 @@ class HomePage extends StatelessWidget {
               color: dotColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(Icons.calendar_today_rounded, color: dotColor, size: 24),
+            child: isDone
+                ? Icon(Icons.check_circle_rounded, color: dotColor, size: 28)
+                : Icon(Icons.calendar_today_rounded, color: dotColor, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -203,10 +251,12 @@ class HomePage extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimaryLight,
+                    color: isDone ? AppColors.textSecondaryLight : AppColors.textPrimaryLight,
+                    decoration: isDone ? TextDecoration.lineThrough : null,
+                    decorationColor: AppColors.textSecondaryLight,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -236,7 +286,6 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.more_vert_rounded, color: AppColors.textSecondaryLight, size: 20),
         ],
       ),
     ).animate().fadeIn(delay: delay.ms).slideY(begin: 0.1);

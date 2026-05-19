@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:taskflow/core/constants/app_colors.dart';
+import 'package:taskflow/core/di/injection.dart';
+import 'package:taskflow/core/storage/secure_storage.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -13,6 +15,24 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _controller = PageController();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingSeen();
+  }
+
+  Future<void> _checkOnboardingSeen() async {
+    final seen = await getIt<SecureStorage>().hasSeenOnboarding();
+    if (seen && mounted) {
+      context.go('/login');
+    }
+  }
+
+  Future<void> _completeOnboarding() async {
+    await getIt<SecureStorage>().setOnboardingSeen();
+    if (mounted) context.go('/login');
+  }
 
   final List<Map<String, dynamic>> _pages = [
     {
@@ -161,7 +181,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 if (_currentPage == _pages.length - 1) {
-                                  context.go('/login');
+                                  _completeOnboarding();
                                 } else {
                                   _controller.nextPage(
                                     duration: 600.ms,

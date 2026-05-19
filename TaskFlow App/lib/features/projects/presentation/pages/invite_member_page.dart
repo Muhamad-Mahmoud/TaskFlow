@@ -18,7 +18,7 @@ class _InviteMemberPageState extends State<InviteMemberPage> {
   final _emailController = TextEditingController();
   String _selectedRole = 'Editor';
 
-  static const _roles = ['Viewer', 'Editor', 'Admin'];
+  static const _roles = ['Viewer', 'Editor', 'Owner'];
 
   static const _bgColor = Color(0xFFF8FAFF);
   static const _inputFill = Color(0xFFF1F5F9);
@@ -202,7 +202,7 @@ class _InviteMemberPageState extends State<InviteMemberPage> {
                           ? '👁 Viewer: Can view tasks and project details, but cannot make changes.'
                           : _selectedRole == 'Editor'
                               ? '✏️ Editor: Can create and edit tasks, but cannot manage members.'
-                              : '⚙️ Admin: Full access to project — can manage tasks, members, and settings.',
+                              : '👑 Owner: Full access to project — can manage tasks, members, and settings.',
                       style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.primary,

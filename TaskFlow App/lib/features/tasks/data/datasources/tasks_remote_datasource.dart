@@ -32,4 +32,21 @@ class TasksRemoteDataSource {
 				(j) => TaskResponse.fromJson(j as Map<String, dynamic>));
 
 	Future<void> delete(String id) => dio.deleteOk(ApiPaths.task(id));
+
+	Future<void> updateStatus(String id, UpdateTaskStatusRequest r) =>
+			dio.patchOk(ApiPaths.taskStatus(id), data: r.toJson());
+
+	Future<void> updatePosition(String id, UpdateTaskPositionRequest r) =>
+			dio.patchOk(ApiPaths.taskPosition(id), data: r.toJson());
+
+	Future<SubtaskResponse> createSubtask(String id, CreateSubtaskRequest r) =>
+			dio.postData(ApiPaths.subtasks(id), r.toJson(),
+					(j) => SubtaskResponse.fromJson(j as Map<String, dynamic>));
+
+	Future<SubtaskResponse> updateSubtask(String id, String sid, UpdateSubtaskRequest r) =>
+			dio.patchData(ApiPaths.subtask(id, sid), r.toJson(),
+					(j) => SubtaskResponse.fromJson(j as Map<String, dynamic>));
+
+	Future<void> deleteSubtask(String id, String sid) =>
+			dio.deleteOk(ApiPaths.subtask(id, sid));
 }

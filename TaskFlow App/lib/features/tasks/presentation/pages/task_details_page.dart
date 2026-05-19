@@ -271,14 +271,21 @@ class _TaskDetailsViewState extends State<_TaskDetailsView> {
                 const SizedBox(height: 24),
 
                 // Action Buttons
-                Row(
-                  children: [
-                    _buildActionButton(Icons.edit, 'Edit'),
-                    const SizedBox(width: 8),
-                    _buildActionButton(Icons.share, 'Share'),
-                    const SizedBox(width: 8),
-                    _buildActionButton(Icons.copy, 'Copy Link'),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildActionButton(Icons.person_add_alt_1, 'Assign', onTap: () => _showAssignDialog(task)),
+                      const SizedBox(width: 8),
+                      _buildActionButton(Icons.edit, 'Edit', onTap: () {
+                        context.push('/create-task', extra: {
+                          'taskToEdit': task,
+                        }).then((_) {
+                          _bloc.add(LoadTaskDetailRequested(task.id));
+                        });
+                      }),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 32),
@@ -379,12 +386,25 @@ class _TaskDetailsViewState extends State<_TaskDetailsView> {
                           : null,
                     ),
                     label: 'ASSIGNEE',
-                    valueWidget: Text(
-                      task.assignee?.fullName ?? 'Unassigned',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                          color: AppColors.textPrimaryLight),
+                    valueWidget: Row(
+                      children: [
+                        Text(
+                          task.assignee?.fullName ?? 'Unassigned',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppColors.textPrimaryLight),
+                        ),
+                        const Spacer(),
+                        const Text(
+                          'Change',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -571,11 +591,16 @@ class _TaskDetailsViewState extends State<_TaskDetailsView> {
                             const SizedBox(width: 8),
                             const Expanded(
                               child: TextField(
+                                style: TextStyle(color: AppColors.textPrimaryLight),
                                 decoration: InputDecoration(
                                   hintText: 'Add a comment...',
+                                  hintStyle: TextStyle(color: AppColors.textSecondaryLight),
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
                                   focusedBorder: InputBorder.none,
+                                  filled: true,
+                                  fillColor: Colors.transparent,
+                                  contentPadding: EdgeInsets.zero,
                                 ),
                               ),
                             ),
@@ -635,27 +660,30 @@ class _TaskDetailsViewState extends State<_TaskDetailsView> {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEBEFF5).withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFEBEFF5)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: AppColors.textSecondaryLight),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimaryLight,
+  Widget _buildActionButton(IconData icon, String label, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEBEFF5).withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFEBEFF5)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: AppColors.textSecondaryLight),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimaryLight,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -691,21 +719,23 @@ class _TaskDetailsViewState extends State<_TaskDetailsView> {
             child: iconWidget ?? Icon(icon, size: 18, color: iconColor),
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondaryLight.withValues(alpha: 0.6),
-                  letterSpacing: 1.0,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondaryLight.withValues(alpha: 0.6),
+                    letterSpacing: 1.0,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              valueWidget,
-            ],
+                const SizedBox(height: 4),
+                valueWidget,
+              ],
+            ),
           ),
         ],
       ),

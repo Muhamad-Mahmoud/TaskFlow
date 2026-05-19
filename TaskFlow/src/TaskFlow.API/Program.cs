@@ -2,6 +2,8 @@ using TaskFlow.API.Extensions;
 using TaskFlow.API.Middleware;
 using TaskFlow.Application;
 using TaskFlow.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using TaskFlow.Infrastructure.Persistence;
 
 // Fix for Npgsql 6+: allow DateTime with Kind=Unspecified (from JSON / date pickers)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -31,12 +33,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -48,5 +46,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Auto migration
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<TaskFlow.Infrastructure.Persistence.TaskFlowDbContext>();
+        dbContext.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Migration failed: {ex.Message}");
+}
 
 app.Run();

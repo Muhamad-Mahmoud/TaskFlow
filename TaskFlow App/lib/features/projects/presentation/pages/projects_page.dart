@@ -11,10 +11,10 @@ class ProjectsPage extends StatefulWidget {
   const ProjectsPage({super.key});
 
   @override
-  State<ProjectsPage> createState() => _ProjectsPageState();
+  State<ProjectsPage> createState() => ProjectsPageState();
 }
 
-class _ProjectsPageState extends State<ProjectsPage> {
+class ProjectsPageState extends State<ProjectsPage> {
   late ProjectsBloc _bloc;
 
   @override
@@ -32,6 +32,9 @@ class _ProjectsPageState extends State<ProjectsPage> {
   void _refresh() {
     _bloc.add(LoadProjectsRequested());
   }
+
+  // Public method callable from AppShell via GlobalKey
+  void refresh() => _refresh();
 
   @override
   Widget build(BuildContext context) {
@@ -53,33 +56,22 @@ class _ProjectsPageState extends State<ProjectsPage> {
                     parent: BouncingScrollPhysics()),
                 slivers: [
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                     sliver: SliverToBoxAdapter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'All Projects',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.textPrimaryLight,
-                              letterSpacing: -1,
-                            ),
-                          ).animate().fadeIn().slideX(begin: -0.1),
-                          const SizedBox(height: 8),
                           Text(
                             state is ProjectsLoaded
                                 ? '${state.projects.length} active project${state.projects.length != 1 ? 's' : ''}'
-                                : 'Loading projects...',
+                                : 'Loading...',
                             style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textSecondaryLight
-                                  .withValues(alpha: 0.8),
+                              fontSize: 15,
+                              color: AppColors.textSecondaryLight.withValues(alpha: 0.8),
                               fontWeight: FontWeight.w500,
                             ),
                           ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.1),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 20),
                         ],
                       ),
                     ),

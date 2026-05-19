@@ -13,10 +13,10 @@ class TasksPage extends StatefulWidget {
   const TasksPage({super.key, this.projectId});
 
   @override
-  State<TasksPage> createState() => _TasksPageState();
+  State<TasksPage> createState() => TasksPageState();
 }
 
-class _TasksPageState extends State<TasksPage> {
+class TasksPageState extends State<TasksPage> {
   late TasksBloc _bloc;
 
   @override
@@ -35,6 +35,9 @@ class _TasksPageState extends State<TasksPage> {
     _bloc.add(LoadTasksRequested(projectId: widget.projectId));
   }
 
+  // Public method callable from AppShell via GlobalKey
+  void refresh() => _refresh();
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -49,35 +52,28 @@ class _TasksPageState extends State<TasksPage> {
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.projectId != null ? 'Project Tasks' : 'My Tasks',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.textPrimaryLight,
-                              letterSpacing: -1,
-                            ),
-                          ).animate().fadeIn().slideX(begin: -0.1),
-                          const SizedBox(height: 8),
-                          Text(
-                            DateFormat('EEEE, d MMMM').format(DateTime.now()),
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textSecondaryLight.withValues(alpha: 0.8),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.1),
-                          const SizedBox(height: 32),
-                        ],
+                  if (widget.projectId == null)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat('EEEE, d MMMM').format(DateTime.now()),
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: AppColors.textSecondaryLight.withValues(alpha: 0.8),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.1),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  if (widget.projectId != null)
+                    const SliverPadding(padding: EdgeInsets.only(top: 24)),
 
                   if (state is TasksLoading)
                     SliverPadding(

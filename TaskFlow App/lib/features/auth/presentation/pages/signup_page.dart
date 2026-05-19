@@ -153,14 +153,14 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           const SizedBox(height: 8),
                           TextField(
-                            style: const TextStyle(color: AppColors.textPrimaryLight),
+                            style: const TextStyle(color: Colors.black87),
                             controller: _nameController,
                             keyboardType: TextInputType.name,
                             decoration: InputDecoration(
                               hintText: 'John Doe',
                               prefixIcon: Icon(Icons.person_outline, color: AppColors.textSecondaryLight),
                               filled: true,
-                              fillColor: const Color(0xFFF8FAFC),
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -181,14 +181,14 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           const SizedBox(height: 8),
                           TextField(
-                            style: const TextStyle(color: AppColors.textPrimaryLight),
+                            style: const TextStyle(color: Colors.black87),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: 'name@company.com',
                               prefixIcon: Icon(Icons.mail_outline, color: AppColors.textSecondaryLight),
                               filled: true,
-                              fillColor: const Color(0xFFF8FAFC),
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -209,14 +209,14 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           const SizedBox(height: 8),
                           TextField(
-                            style: const TextStyle(color: AppColors.textPrimaryLight),
+                            style: const TextStyle(color: Colors.black87),
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
                               hintText: '••••••••',
                               prefixIcon: Icon(Icons.lock_outline, color: AppColors.textSecondaryLight),
                               filled: true,
-                              fillColor: const Color(0xFFF8FAFC),
+                              fillColor: Colors.white,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -266,62 +266,6 @@ class _SignupPageState extends State<SignupPage> {
                             },
                           ),
                           
-                          const SizedBox(height: 32),
-                          
-                          // Or continue with
-                          Row(
-                            children: [
-                              const Expanded(child: Divider(color: AppColors.borderLight)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Text(
-                                  'or continue with',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.textSecondaryLight.withValues(alpha: 0.8),
-                                  ),
-                                ),
-                              ),
-                              const Expanded(child: Divider(color: AppColors.borderLight)),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: 32),
-                          
-                          // Social Buttons
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 28),
-                                  label: const Text('Google', style: TextStyle(color: AppColors.textPrimaryLight)),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    side: const BorderSide(color: AppColors.borderLight),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.apple, color: Colors.black, size: 24),
-                                  label: const Text('Apple', style: TextStyle(color: AppColors.textPrimaryLight)),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    side: const BorderSide(color: AppColors.borderLight),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
